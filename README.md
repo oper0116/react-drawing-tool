@@ -14,3 +14,5 @@ yarn start
 - [[]] HIGHLIGHTER 기능
 - [[]] 하단 드로잉툴
 - [[]] CROP
+- [[]] UNDO, REDO
+- [[]] TEST CODE
