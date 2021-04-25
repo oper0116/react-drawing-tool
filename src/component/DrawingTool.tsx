@@ -1,6 +1,7 @@
-import { useCallback, useState } from "react";
-import { useCanvas } from "./hooks";
-import { Options, PEN_TYPE } from "./types";
+import { memo, useCallback, useMemo, useState } from "react";
+import { useCanvas } from "./hooks/useCanvas";
+import Sketch from "./Sketch";
+import { MODE, Options, PEN_TYPE } from "./types";
 
 const colors = [
   '#000',
@@ -10,10 +11,10 @@ const colors = [
 ]
 
 const DrawingTool = () => {
+  console.debug('DrawingTool');
+  const [options, setOption] = useState<Options>({ mode: MODE.DRAWING, color: colors[0], pen: PEN_TYPE.BASIC });
 
-  const [option, setOption] = useState<Options>({ color: colors[0], pen: PEN_TYPE.BASIC });
-
-  const [canvasRef] = useCanvas(option);
+  // const [canvasRef] = useCanvas();
 
   const setColor = useCallback((color) => {
     setOption(item => {
@@ -28,18 +29,33 @@ const DrawingTool = () => {
   }, []);
 
   const onClear = () => {
-    const context = canvasRef.current!.getContext('2d');
-    context?.clearRect(0, 0, 600, 400);
+    // const context = canvasRef.current!.getContext('2d');
+    // context?.clearRect(0, 0, 600, 400);
+  }
+
+  const onCrop = () => {
+    // setOption(item => {
+    //   return ({ ...item, mode: (item.mode === MODE.CROP) ? MODE.DRAWING : MODE.CROP })
+    // });
   }
 
   return (
     <>
-      <canvas ref={canvasRef} width={600} height={400}></canvas >
+      {/* <canvas width={600} height={400}></canvas> */}
+      {/* <canvas ref={canvasRef} width={600} height={400}></canvas> */}
+
+      <Sketch options={options} />
       <div className="react-drawing-tool">
         <ul className="react-drawing-tool-pens">
-          <li onClick={() => setPen(PEN_TYPE.BASIC)}>BASIC</li>
-          <li onClick={() => setPen(PEN_TYPE.HIGHLIGHTER)}>HIGHLIGHTER</li>
-          <li onClick={() => setPen(PEN_TYPE.ERASER)}>ERASER</li>
+          <li>
+            <button onClick={() => setPen(PEN_TYPE.BASIC)}>BASIC</button>
+          </li>
+          <li>
+            <button onClick={() => setPen(PEN_TYPE.HIGHLIGHTER)}>HIGHLIGHTER</button>
+          </li>
+          <li>
+            <button onClick={() => setPen(PEN_TYPE.ERASER)}>ERASER</button>
+          </li>
         </ul>
         <ul className="react-drawing-tool-colors">
           {
@@ -47,9 +63,9 @@ const DrawingTool = () => {
               return (
                 <li
                   style={{ backgroundColor: `${color}` }}
-                  className="item"
+                  className={`item ${(color === options.color) && 'active'}`}
                   onClick={() => setColor(color)}
-                >{color}
+                >
                 </li>
               )
             })
@@ -58,6 +74,11 @@ const DrawingTool = () => {
         <ul>
           <li>
             <button onClick={onClear}>Clear</button>
+          </li>
+        </ul>
+        <ul>
+          <li>
+            <button onClick={onCrop}>Crop</button>
           </li>
         </ul>
       </div>

@@ -4,12 +4,18 @@ export interface Coordinate {
 }
 
 export interface Options {
+  mode: MODE;
   color: string;
-  pen: any;
+  pen: PEN_TYPE;
 }
 
 export enum PEN_TYPE {
   BASIC,
   HIGHLIGHTER,
   ERASER
+}
+
+export enum MODE {
+  DRAWING,
+  CROP
 }

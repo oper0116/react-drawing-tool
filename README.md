@@ -14,6 +14,7 @@ yarn start
           
 ## TODO
 
+- [ ] Canvas에 이벤트 들어왔을 경우에 다시 렌더링 되는 현상 최적화필요
 - [ ] HIGHLIGHTER 기능
 - [ ] 하단 드로잉툴
 - [ ] CROP

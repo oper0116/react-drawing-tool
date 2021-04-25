@@ -1,7 +1,22 @@
-import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
-import { Coordinate, Options, PEN_TYPE } from '../types';
+import { RefObject, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Coordinate, MODE, Options, PEN_TYPE } from '../types';
 import { getEventPos } from '../utils';
 
+
+const getPenStyles = (type: PEN_TYPE) => {
+  let obj = { compositeOperation: 'source-over', alpha: 1, lineWidth: 1 };
+  switch (type) {
+    case PEN_TYPE.BASIC:
+      break;
+    case PEN_TYPE.HIGHLIGHTER:
+      obj = { ...obj, alpha: 0.2, lineWidth: 15 };
+      break;
+    case PEN_TYPE.ERASER:
+      obj = { ...obj, compositeOperation: 'destination-out', lineWidth: 10 };
+      break;
+  }
+  return obj;
+}
 
 
 export function useCanvas(options: Options): [RefObject<HTMLCanvasElement>] {
@@ -22,21 +37,6 @@ export function useCanvas(options: Options): [RefObject<HTMLCanvasElement>] {
     };
   }
 
-  const getCompositeOperation = (penType: PEN_TYPE) => {
-    return penType === PEN_TYPE.ERASER ? 'destination-out' : 'source-over';
-  }
-
-  const getLineWidth = (penType: PEN_TYPE): number => {
-    switch (penType) {
-      case PEN_TYPE.BASIC:
-        return 1;
-      case PEN_TYPE.HIGHLIGHTER:
-        return 5;
-      case PEN_TYPE.ERASER:
-        return 4;
-    }
-  }
-
   const draw = useCallback((originCoordinate: Coordinate, newCoordinate: Coordinate) => {
     const context = canvasRef.current!.getContext('2d')!;
     context.beginPath();
@@ -51,9 +51,13 @@ export function useCanvas(options: Options): [RefObject<HTMLCanvasElement>] {
     if (coordinate) {
 
       const context = canvasRef.current!.getContext('2d')!;
+      context.lineCap = "round";
+      context.lineJoin = "round";
       context.strokeStyle = options.color;
-      context.globalCompositeOperation = getCompositeOperation(options.pen);
-      context.lineWidth = getLineWidth(options.pen);
+      const { compositeOperation, alpha, lineWidth } = getPenStyles(options.pen);
+      context.globalCompositeOperation = compositeOperation;
+      context.lineWidth = lineWidth;
+      context.globalAlpha = alpha;
 
       setPosition(coordinate);
     }
@@ -72,7 +76,7 @@ export function useCanvas(options: Options): [RefObject<HTMLCanvasElement>] {
     setPosition(undefined);
   }, [])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const canvas = canvasRef.current!;
     canvas.addEventListener('mousedown', startPaint);
     canvas.addEventListener('mousemove', paint);
