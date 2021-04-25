@@ -7,6 +7,7 @@ interface PropsType {
 }
 
 const Sketch = ({ options }: PropsType) => {
+  console.debug('Sketch : ');
   const [canvasRef] = useCanvas(options);
 
 

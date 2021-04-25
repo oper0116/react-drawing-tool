@@ -23,7 +23,9 @@ export function useCanvas(options: Options): [RefObject<HTMLCanvasElement>] {
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const [position, setPosition] = useState<Coordinate | undefined>(undefined);
+  let position: Coordinate | undefined = undefined;
+
+  // const [position, setPosition] = useState<Coordinate | undefined>(undefined);
 
   const getCoordinates = (e: MouseEvent | TouchEvent): Coordinate | undefined => {
     if (!canvasRef.current) {
@@ -36,6 +38,10 @@ export function useCanvas(options: Options): [RefObject<HTMLCanvasElement>] {
       y: posY - canvas.offsetTop
     };
   }
+
+  const setCoordinates = useCallback((coordinate: Coordinate | undefined) => {
+    position = coordinate;
+  }, []);
 
   const draw = useCallback((originCoordinate: Coordinate, newCoordinate: Coordinate) => {
     const context = canvasRef.current!.getContext('2d')!;
@@ -58,25 +64,24 @@ export function useCanvas(options: Options): [RefObject<HTMLCanvasElement>] {
       context.globalCompositeOperation = compositeOperation;
       context.lineWidth = lineWidth;
       context.globalAlpha = alpha;
-
-      setPosition(coordinate);
+      setCoordinates(coordinate);
     }
-  }, [options]);
+  }, [options, setCoordinates]);
 
   const paint = useCallback((e: MouseEvent | TouchEvent) => {
     e.preventDefault();
     const newPosition = getCoordinates(e);
     if (position && newPosition) {
       draw(position, newPosition);
-      setPosition(newPosition);
+      setCoordinates(newPosition);
     }
-  }, [position, draw]);
+  }, [draw, position, setCoordinates]);
 
   const endPaint = useCallback(() => {
-    setPosition(undefined);
-  }, [])
+    setCoordinates(undefined);
+  }, [setCoordinates]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const canvas = canvasRef.current!;
     canvas.addEventListener('mousedown', startPaint);
     canvas.addEventListener('mousemove', paint);
