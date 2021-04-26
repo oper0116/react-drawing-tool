@@ -1,5 +1,5 @@
-import { RefObject, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Coordinate, MODE, Options, PEN_TYPE } from '../types';
+import { RefObject, useCallback, useEffect, useRef } from 'react';
+import { Coordinate, Options, PEN_TYPE } from '../types';
 import { getEventPos } from '../utils';
 
 
@@ -18,14 +18,10 @@ const getPenStyles = (type: PEN_TYPE) => {
   return obj;
 }
 
+let position: Coordinate | undefined = undefined;
 
 export function useCanvas(options: Options): [RefObject<HTMLCanvasElement>] {
-
   const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  let position: Coordinate | undefined = undefined;
-
-  // const [position, setPosition] = useState<Coordinate | undefined>(undefined);
 
   const getCoordinates = (e: MouseEvent | TouchEvent): Coordinate | undefined => {
     if (!canvasRef.current) {
@@ -55,7 +51,6 @@ export function useCanvas(options: Options): [RefObject<HTMLCanvasElement>] {
   const startPaint = useCallback((e: MouseEvent | TouchEvent) => {
     const coordinate = getCoordinates(e);
     if (coordinate) {
-
       const context = canvasRef.current!.getContext('2d')!;
       context.lineCap = "round";
       context.lineJoin = "round";
@@ -75,7 +70,7 @@ export function useCanvas(options: Options): [RefObject<HTMLCanvasElement>] {
       draw(position, newPosition);
       setCoordinates(newPosition);
     }
-  }, [draw, position, setCoordinates]);
+  }, [draw, setCoordinates]);
 
   const endPaint = useCallback(() => {
     setCoordinates(undefined);
