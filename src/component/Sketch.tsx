@@ -1,18 +1,17 @@
-import { memo, useCallback, useState } from "react";
 import { useCanvas } from "./hooks/useCanvas";
-import { MODE, Options, PEN_TYPE } from "./types";
+import { Options } from "./types";
 
 interface PropsType {
+  width: number;
+  height: number;
   options: Options;
 }
 
-const Sketch = ({ options }: PropsType) => {
-  console.debug('Sketch : ');
+const Sketch = ({ width, height, options }: PropsType) => {
   const [canvasRef] = useCanvas(options);
 
-
   return (
-    <canvas ref={canvasRef} width={600} height={400}></canvas>
+    <canvas ref={canvasRef} width={width} height={height}></canvas>
   );
 }
 

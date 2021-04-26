@@ -1,5 +1,4 @@
-import { memo, useCallback, useMemo, useState } from "react";
-import { useCanvas } from "./hooks/useCanvas";
+import { useCallback, useState } from "react";
 import Sketch from "./Sketch";
 import { MODE, Options, PEN_TYPE } from "./types";
 
@@ -11,10 +10,12 @@ const colors = [
 ]
 
 const DrawingTool = () => {
-  console.debug('DrawingTool');
-  const [options, setOption] = useState<Options>({ mode: MODE.DRAWING, color: colors[0], pen: PEN_TYPE.BASIC });
-
-  // const [canvasRef] = useCanvas();
+  const [options, setOption] = useState<Options>({
+    mode: MODE.DRAWING,
+    color: colors[0],
+    pen: PEN_TYPE.BASIC,
+    allClearId: 0
+  });
 
   const setColor = useCallback((color) => {
     setOption(item => {
@@ -28,10 +29,11 @@ const DrawingTool = () => {
     });
   }, []);
 
-  const onClear = () => {
-    // const context = canvasRef.current!.getContext('2d');
-    // context?.clearRect(0, 0, 600, 400);
-  }
+  const onClear = useCallback(() => {
+    setOption(item => {
+      return ({ ...item, allClearId: item.allClearId + 1 });
+    })
+  }, [])
 
   const onCrop = () => {
     // setOption(item => {
@@ -41,10 +43,7 @@ const DrawingTool = () => {
 
   return (
     <>
-      {/* <canvas width={600} height={400}></canvas> */}
-      {/* <canvas ref={canvasRef} width={600} height={400}></canvas> */}
-
-      <Sketch options={options} />
+      <Sketch width={600} height={400} options={options} />
       <div className="react-drawing-tool">
         <ul className="react-drawing-tool-pens">
           <li>
@@ -62,6 +61,7 @@ const DrawingTool = () => {
             colors.map(color => {
               return (
                 <li
+                  key={color}
                   style={{ backgroundColor: `${color}` }}
                   className={`item ${(color === options.color) && 'active'}`}
                   onClick={() => setColor(color)}

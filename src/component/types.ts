@@ -7,6 +7,7 @@ export interface Options {
   mode: MODE;
   color: string;
   pen: PEN_TYPE;
+  allClearId: number;
 }
 
 export enum PEN_TYPE {

@@ -2,6 +2,13 @@ import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { Coordinate, Options, PEN_TYPE } from '../types';
 import { getEventPos } from '../utils';
 
+function usePrevious<T>(value: T) {
+  const ref = useRef<T>();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+}
 
 const getPenStyles = (type: PEN_TYPE) => {
   let obj = { compositeOperation: 'source-over', alpha: 1, lineWidth: 1 };
@@ -22,6 +29,8 @@ let position: Coordinate | undefined = undefined;
 
 export function useCanvas(options: Options): [RefObject<HTMLCanvasElement>] {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const prevOptions = usePrevious(options);
 
   const getCoordinates = (e: MouseEvent | TouchEvent): Coordinate | undefined => {
     if (!canvasRef.current) {
@@ -75,6 +84,15 @@ export function useCanvas(options: Options): [RefObject<HTMLCanvasElement>] {
   const endPaint = useCallback(() => {
     setCoordinates(undefined);
   }, [setCoordinates]);
+
+  useEffect(() => {
+    if (canvasRef.current && prevOptions?.allClearId !== options.allClearId) {
+      const context = canvasRef.current.getContext('2d')!;
+      const width = canvasRef.current.width;
+      const height = canvasRef.current.height;
+      context?.clearRect(0, 0, width, height);
+    }
+  }, [prevOptions?.allClearId, options.allClearId]);
 
   useEffect(() => {
     const canvas = canvasRef.current!;
