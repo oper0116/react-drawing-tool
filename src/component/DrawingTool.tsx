@@ -17,13 +17,13 @@ const DrawingTool = () => {
     allClearId: 0
   });
 
-  const setColor = useCallback((color) => {
+  const setColor = useCallback((color: string) => {
     setOption(item => {
       return ({ ...item, color })
     });
   }, []);
 
-  const setPen = useCallback((pen) => {
+  const setPen = useCallback((pen: PEN_TYPE) => {
     setOption(item => {
       return ({ ...item, pen })
     });
