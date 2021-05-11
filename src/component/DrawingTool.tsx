@@ -14,7 +14,7 @@ const DrawingTool = () => {
     mode: MODE.DRAWING,
     color: colors[0],
     pen: PEN_TYPE.BASIC,
-    allClearId: 0
+    allClearId: 0,
   });
 
   const setColor = useCallback((color: string) => {
@@ -35,11 +35,11 @@ const DrawingTool = () => {
     })
   }, [])
 
-  const onCrop = () => {
-    // setOption(item => {
-    //   return ({ ...item, mode: (item.mode === MODE.CROP) ? MODE.DRAWING : MODE.CROP })
-    // });
-  }
+  const onCrop = useCallback(() => {
+    setOption(item => {
+      return ({ ...item, mode: (item.mode === MODE.CROP) ? MODE.DRAWING : MODE.CROP })
+    });
+  }, []);
 
   return (
     <>
