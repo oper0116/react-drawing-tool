@@ -25,10 +25,11 @@ const getPenStyles = (type: PEN_TYPE) => {
   return obj;
 }
 
-let position: Coordinate | undefined = undefined;
-
 export function useCanvas(options: Options): [RefObject<HTMLCanvasElement>] {
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const position = useRef<Coordinate | undefined>(undefined);
 
   const prevOptions = usePrevious(options);
 
@@ -45,7 +46,7 @@ export function useCanvas(options: Options): [RefObject<HTMLCanvasElement>] {
   }
 
   const setCoordinates = useCallback((coordinate: Coordinate | undefined) => {
-    position = coordinate;
+    position.current = coordinate;
   }, []);
 
   const draw = useCallback((originCoordinate: Coordinate, newCoordinate: Coordinate) => {
@@ -81,8 +82,8 @@ export function useCanvas(options: Options): [RefObject<HTMLCanvasElement>] {
   const moveEvt = useCallback((e: MouseEvent | TouchEvent) => {
     e.preventDefault();
     const newPosition = getCoordinates(e);
-    if (position && newPosition) {
-      draw(position, newPosition);
+    if (position && position.current && newPosition) {
+      draw(position.current, newPosition);
       setCoordinates(newPosition);
     }
   }, [draw, setCoordinates]);
@@ -96,7 +97,7 @@ export function useCanvas(options: Options): [RefObject<HTMLCanvasElement>] {
       const context = canvasRef.current.getContext('2d')!;
       const width = canvasRef.current.width;
       const height = canvasRef.current.height;
-      context?.clearRect(0, 0, width, height);
+      context.clearRect(0, 0, width, height);
     }
   }, [prevOptions?.allClearId, options.allClearId]);
 
