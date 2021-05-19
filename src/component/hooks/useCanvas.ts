@@ -1,14 +1,7 @@
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { Coordinate, MODE, Options, PEN_TYPE } from '../types';
 import { getEventPos } from '../utils';
-
-function usePrevious<T>(value: T) {
-  const ref = useRef<T>();
-  useEffect(() => {
-    ref.current = value;
-  });
-  return ref.current;
-}
+import usePrevious from './usePrevious';
 
 const getPenStyles = (type: PEN_TYPE) => {
   let obj = { compositeOperation: 'source-over', alpha: 1, lineWidth: 1 };
